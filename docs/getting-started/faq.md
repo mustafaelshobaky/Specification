@@ -93,3 +93,18 @@ In this case, each element x is being "transformed" into its `Name` property.
 Also make sure that the base class of your Specification using `Select` is a `Specification<T, TReturn>`.
 
 See the [doc page](../features/select.md) on `Select` for a more detailed explanation.
+
+## Which versions of EF and EF Core can I use?
+
+Ardalis.Specification by default sets the minimum required version.
+
+Which is: `EF Core 6.0.6` and `EF 6.4.4`.
+
+But you are free to explicitly set higher versions if you like.
+
+## ISingleResultSpecification is Obsolete
+
+I'm getting a warning or error telling me that `ISingleResultSpecification` is obsolete. What am I supposed to do to fix it?
+
+> You can just remove the interface usage from any specification that is using it. It was useful with `GetBySpec` calls in earlier versions of the library but newer versions use the more canonical `FirstOrDefault` or `SingleOrDefault` methods on repositories whenever a single result is desired or expected (which eliminates the need for the interface).
+

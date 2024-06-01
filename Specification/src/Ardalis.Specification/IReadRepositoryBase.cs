@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ardalis.Specification
+namespace Ardalis.Specification;
+
+/// <summary>
+/// <para>
+/// A <see cref="IRepositoryBase{T}" /> can be used to query instances of <typeparamref name="T" />.
+/// An <see cref="ISpecification{T}"/> (or derived) is used to encapsulate the LINQ queries against the database.
+/// </para>
+/// </summary>
+/// <typeparam name="T">The type of entity being operated on by this repository.</typeparam>
+public interface IReadRepositoryBase<T> where T : class
 {
-  /// <summary>
-  /// <para>
-  /// A <see cref="IRepositoryBase{T}" /> can be used to query instances of <typeparamref name="T" />.
-  /// An <see cref="ISpecification{T}"/> (or derived) is used to encapsulate the LINQ queries against the database.
-  /// </para>
-  /// </summary>
-  /// <typeparam name="T">The type of entity being operated on by this repository.</typeparam>
-  public interface IReadRepositoryBase<T> where T : class
-  {
     /// <summary>
     /// Finds an entity with the given primary key value.
     /// </summary>
     /// <typeparam name="TId">The type of primary key.</typeparam>
     /// <param name="id">The value of the primary key for the entity to be found.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     /// A task that represents the asynchronous operation.
     /// The task result contains the <typeparamref name="T" />, or <see langword="null"/>.
@@ -33,7 +34,7 @@ namespace Ardalis.Specification
     /// A task that represents the asynchronous operation.
     /// The task result contains the <typeparamref name="T" />, or <see langword="null"/>.
     /// </returns>
-    [Obsolete]
+    [Obsolete("Use FirstOrDefaultAsync<T> or SingleOrDefaultAsync<T> instead. The SingleOrDefaultAsync<T> can be applied only to SingleResultSpecification<T> specifications.")]
     Task<T?> GetBySpecAsync(ISpecification<T> specification, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -45,7 +46,7 @@ namespace Ardalis.Specification
     /// A task that represents the asynchronous operation.
     /// The task result contains the <typeparamref name="TResult" />.
     /// </returns>
-    [Obsolete]
+    [Obsolete("Use FirstOrDefaultAsync<T> or SingleOrDefaultAsync<T> instead. The SingleOrDefaultAsync<T> can be applied only to SingleResultSpecification<T> specifications.")]
     Task<TResult?> GetBySpecAsync<TResult>(ISpecification<T, TResult> specification, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -166,5 +167,17 @@ namespace Ardalis.Specification
     /// source sequence contains any elements; otherwise, false.
     /// </returns>
     Task<bool> AnyAsync(CancellationToken cancellationToken = default);
-  }
+
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Finds all entities of <typeparamref name="T" />, that matches the encapsulated query logic of the
+    /// <paramref name="specification"/>, from the database.
+    /// </summary>
+    /// <param name="specification">The encapsulated query logic.</param>
+    /// <returns>
+    ///  Returns an IAsyncEnumerable which can be enumerated asynchronously.
+    /// </returns>
+    IAsyncEnumerable<T> AsAsyncEnumerable(ISpecification<T> specification);
+#endif
 }
